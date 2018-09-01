@@ -1,0 +1,19 @@
+{
+  "VOUCHER": {
+    "full_price": 500,
+    "n_for_m": {
+      "n": 2,
+      "m": 1
+    }
+  },
+  "TSHIRT": {
+    "full_price": 2000,
+    "bulk_discount": {
+      "threshold": 3,
+      "bulk_price": 1900
+    }
+  },
+  "MUG": {
+    "full_price": 750
+  }
+}
