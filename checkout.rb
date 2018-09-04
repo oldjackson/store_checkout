@@ -1,3 +1,7 @@
+require 'money'
+
+PRICE_FORMAT = { decimal_mark: '.', symbol_position: :after, symbol_after_without_space: true }
+
 class Checkout
   def initialize(pricing_rules)
     @pricing_rules = pricing_rules
@@ -13,11 +17,8 @@ class Checkout
   end
 
   def total
-    sum = 0
-    @counter.each do |k,v|
-      sum += item_price(v, @pricing_rules[k])
-    end
-    sum
+    I18n.enforce_available_locales = false
+    Money.new(total_cents,@pricing_rules["currency"]).format(PRICE_FORMAT)
   end
 
   def reset(pricing_rules = nil)
@@ -26,6 +27,14 @@ class Checkout
   end
 
   private
+
+  def total_cents
+    sum = 0
+    @counter.each do |k,v|
+      sum += item_price(v, @pricing_rules[k])
+    end
+    sum
+  end
 
   def item_price(num, item_rules)
     fp = item_rules["full_price"]

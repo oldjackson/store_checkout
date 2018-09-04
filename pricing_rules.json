@@ -1,4 +1,5 @@
 {
+  "currency": "EUR",
   "VOUCHER": {
     "full_price": 500,
     "n_for_m": {
