@@ -1,7 +1,5 @@
 require 'money'
 
-PRICE_FORMAT = { decimal_mark: '.', symbol_position: :after, symbol_after_without_space: true }
-
 class Checkout
   def initialize(pricing_rules)
     @pricing_rules = pricing_rules
@@ -9,16 +7,15 @@ class Checkout
   end
 
   def scan(item_code)
-    if @pricing_rules[item_code].nil?
-      puts "Item not found in inventory"
-    else
-      @counter[item_code] += 1
-    end
+    raise KeyError.new, "Item not found in inventory" if @pricing_rules[item_code].nil?
+    @counter[item_code] += 1
   end
 
   def total
     I18n.enforce_available_locales = false
-    Money.new(total_cents,@pricing_rules["currency"]).format(PRICE_FORMAT)
+    currency = @pricing_rules[:price][:currency]
+    prc_format = str_to_sym(@pricing_rules[:price][:format])
+    Money.new(total_cents,currency).format(prc_format)
   end
 
   def reset(pricing_rules = nil)
@@ -37,20 +34,20 @@ class Checkout
   end
 
   def item_price(num, item_rules)
-    fp = item_rules["full_price"]
+    fp = item_rules[:full_price]
     prices = [num * fp]
 
-    unless item_rules['n_for_m'].nil?
-      n = item_rules['n_for_m']["n"]
-      m = item_rules['n_for_m']["m"]
+    unless item_rules[:n_for_m].nil?
+      n = item_rules[:n_for_m][:n]
+      m = item_rules[:n_for_m][:m]
       groups_of_n = num / n
       ungrouped = num % n
       prices += [(groups_of_n * m + ungrouped) * fp]
     end
 
-    unless item_rules['bulk_discount'].nil?
-      bp = item_rules['bulk_discount']["bulk_price"]
-      thr = item_rules['bulk_discount']["threshold"]
+    unless item_rules[:bulk_discount].nil?
+      bp = item_rules[:bulk_discount][:bulk_price]
+      thr = item_rules[:bulk_discount][:threshold]
       if num >= thr
         prices += [num * bp]
       else
@@ -60,4 +57,16 @@ class Checkout
 
     prices.min
   end
+
+  def str_to_sym(hsh)
+    sym_hash = hsh.map do |k, v|
+      if (v.is_a? String) && v =~ /\w+/
+        [k, v.to_sym]
+      else
+        [k, v]
+      end
+    end
+    Hash[sym_hash]
+  end
+
 end

@@ -1,5 +1,12 @@
 {
-  "currency": "EUR",
+  "price": {
+    "currency": "EUR",
+    "format": {
+      "decimal_mark": ".",
+      "symbol_position": "after",
+      "symbol_after_without_space": true
+    }
+  },
   "VOUCHER": {
     "full_price": 500,
     "n_for_m": {
