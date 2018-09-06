@@ -2,13 +2,14 @@ require 'money'
 
 class Checkout
   def initialize(pricing_rules)
+    validate(pricing_rules)
     @pricing_rules = pricing_rules
     @counter = Hash.new(0)
   end
 
   def scan(item_code)
-    raise KeyError.new, "Item not found in inventory" if @pricing_rules[item_code].nil?
-    @counter[item_code] += 1
+    raise KeyError.new, "Item not found in inventory" if @pricing_rules[item_code.to_sym].nil?
+    @counter[item_code.to_sym] += 1
   end
 
   def total
@@ -24,6 +25,26 @@ class Checkout
   end
 
   private
+
+  def validate(pricing_rules)
+    raise ArgumentError.new, "pricing_rules is expected to be a Hash" unless pricing_rules.is_a? Hash
+
+    key_seq_hash = {}
+    hash_flatten("",pricing_rules,key_seq_hash)
+    first_invalid_key = key_seq_hash.select{ |_ ,v| v.is_a? (Numeric) }.select{ |_ ,v| v < 0 }.keys[0]
+    raise ArgumentError.new, "Negative value read at key #{first_invalid_key}" unless first_invalid_key.nil?
+  end
+
+  def hash_flatten(parent, myHash, key_seq_hash)
+    myHash.each do |key, value|
+      total_key = parent == "" ? key : "#{parent}.#{key}"
+      if value.is_a? Hash
+        hash_flatten(total_key, value, key_seq_hash)
+      else
+        key_seq_hash[total_key] = value
+      end
+    end
+  end
 
   def total_cents
     sum = 0

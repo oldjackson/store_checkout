@@ -1,11 +1,13 @@
 require_relative 'checkout.rb'
 require 'json'
 
+PRICING_RULES_PATH = 'data/pricing_rules.json'
+
 def do_checkout
   print `clear`
   puts " *** Checkout started *** "
 
-  pricing_rules = JSON.parse(File.read('pricing_rules.json'), symbolize_names: true)
+  pricing_rules = JSON.parse(File.read(PRICING_RULES_PATH), symbolize_names: true)
   co = Checkout.new(pricing_rules)
   scanned_items = []
 
@@ -31,6 +33,7 @@ def do_checkout
   items_string = scanned_items.empty? ? "none" : scanned_items.join(', ')
   puts "Items: #{items_string}"
   puts "Total: #{co.total}"
+  puts "**************"
 end
 
 do_checkout
