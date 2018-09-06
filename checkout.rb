@@ -1,5 +1,5 @@
 require 'money'
-require 'pry-byebug'
+
 class Checkout
   # validates pricing options and inits the counted items for each kind to 0
   def initialize(pricing_rules)

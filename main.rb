@@ -23,7 +23,7 @@ def do_checkout
         co.scan(item)
         scanned_items << item
       rescue KeyError => e
-        puts e.message
+        puts "*** #{e.message.upcase} ***"
       end
     end
 
