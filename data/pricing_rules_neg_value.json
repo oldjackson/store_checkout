@@ -8,9 +8,9 @@
     }
   },
   "VOUCHER": {
-    "full_price": -500,
+    "full_price": 500,
     "n_for_m": {
-      "n": 2,
+      "n": -2,
       "m": 1
     }
   },
