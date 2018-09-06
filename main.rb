@@ -7,7 +7,7 @@ def do_checkout
   print `clear`
   puts " *** Checkout started *** "
 
-  pricing_rules = JSON.parse(File.read(PRICING_RULES_PATH), symbolize_names: true)
+  pricing_rules = JSON.parse(File.read(PRICING_RULES_PATH))
   co = Checkout.new(pricing_rules)
   scanned_items = []
 
@@ -20,7 +20,7 @@ def do_checkout
       scanned_items.clear
     else
       begin
-        co.scan(item.to_sym)
+        co.scan(item)
         scanned_items << item
       rescue KeyError => e
         puts e.message

@@ -7,23 +7,25 @@ ALT_PRICING_RULES_PATH = 'data/alt_pricing_rules.json'
 
 describe Checkout do
   describe "#initialize" do
-    it "should not raise errors if passed valid pricing rules" do
-      pricing_rules = JSON.parse(File.read(PRICING_RULES_PATH), symbolize_names: true)
-      expect { Checkout.new(pricing_rules) }.to_not raise_error
+    it "should raise an argument error if not passed any argument" do
+      expect { Checkout.new }.to raise_error ArgumentError
     end
     it "should raise an argument error if passed invalid data (not hash)" do
-      pricing_rules = JSON.parse(File.read(NO_HASH_PRICING_RULES_PATH), symbolize_names: true)
+      pricing_rules = JSON.parse(File.read(NO_HASH_PRICING_RULES_PATH))
       expect { Checkout.new(pricing_rules) }.to raise_error ArgumentError
     end
-
     it "should raise an argument error if passed invalid data (negative numbers)" do
-      pricing_rules = JSON.parse(File.read(NEG_VALUE_PRICING_RULES_PATH), symbolize_names: true)
+      pricing_rules = JSON.parse(File.read(NEG_VALUE_PRICING_RULES_PATH))
       expect { Checkout.new(pricing_rules) }.to raise_error ArgumentError
+    end
+    it "should not raise errors if passed valid pricing rules" do
+      pricing_rules = JSON.parse(File.read(PRICING_RULES_PATH))
+      expect { Checkout.new(pricing_rules) }.to_not raise_error
     end
   end
 
   describe "#scan" do
-    pricing_rules = JSON.parse(File.read(PRICING_RULES_PATH), symbolize_names: true)
+    pricing_rules = JSON.parse(File.read(PRICING_RULES_PATH))
     co = Checkout.new(pricing_rules)
 
     it "should accept \"VOUCHER\" as a valid item in the inventory" do
@@ -48,7 +50,7 @@ describe Checkout do
   end
 
   describe "#total" do
-    pricing_rules = JSON.parse(File.read(PRICING_RULES_PATH), symbolize_names: true)
+    pricing_rules = JSON.parse(File.read(PRICING_RULES_PATH))
     co = Checkout.new(pricing_rules)
 
     it "should return 32.50€ for a tshirt, a voucher and a mug" do
@@ -95,7 +97,7 @@ describe Checkout do
     end
 
     it "should return 30.00€ for a tshirt and two vouchers under alternative pricing rules" do
-      alt_pricing_rules = JSON.parse(File.read(ALT_PRICING_RULES_PATH), symbolize_names: true)
+      alt_pricing_rules = JSON.parse(File.read(ALT_PRICING_RULES_PATH))
       co.reset(alt_pricing_rules)
       items = %w[VOUCHER TSHIRT VOUCHER]
       items.each { |i| co.scan(i) }
@@ -104,7 +106,7 @@ describe Checkout do
     end
 
     it "should return 81.00€ for 4 tshirts and a voucher under alternative pricing rules" do
-      alt_pricing_rules = JSON.parse(File.read(ALT_PRICING_RULES_PATH), symbolize_names: true)
+      alt_pricing_rules = JSON.parse(File.read(ALT_PRICING_RULES_PATH))
       co.reset(alt_pricing_rules)
       items = %w[TSHIRT TSHIRT TSHIRT VOUCHER TSHIRT]
       items.each { |i| co.scan(i) }
@@ -113,7 +115,7 @@ describe Checkout do
     end
 
     it "should return 77.50€ for 3 vouchers, 3 tshirts and a mug under alternative pricing rules" do
-      alt_pricing_rules = JSON.parse(File.read(ALT_PRICING_RULES_PATH), symbolize_names: true)
+      alt_pricing_rules = JSON.parse(File.read(ALT_PRICING_RULES_PATH))
       co.reset(alt_pricing_rules)
       items = %w[VOUCHER TSHIRT VOUCHER VOUCHER MUG TSHIRT TSHIRT]
       items.each { |i| co.scan(i) }
