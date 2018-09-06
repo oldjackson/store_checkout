@@ -16,7 +16,7 @@ class Checkout
     I18n.enforce_available_locales = false
     currency = @pricing_rules[:price][:currency]
     prc_format = str_to_sym(@pricing_rules[:price][:format])
-    Money.new(total_cents,currency).format(prc_format)
+    Money.new(total_cents, currency).format(prc_format)
   end
 
   def reset(pricing_rules = nil)
@@ -30,16 +30,16 @@ class Checkout
     raise ArgumentError.new, "pricing_rules is expected to be a Hash" unless pricing_rules.is_a? Hash
 
     key_seq_hash = {}
-    hash_flatten("",pricing_rules,key_seq_hash)
-    first_invalid_key = key_seq_hash.select{ |_ ,v| v.is_a? (Numeric) }.select{ |_ ,v| v < 0 }.keys[0]
+    flatten_hash("", pricing_rules, key_seq_hash)
+    first_invalid_key = key_seq_hash.select { |_, v| v.is_a? Numeric }.select { |_, v| v < 0 }.keys[0]
     raise ArgumentError.new, "Negative value read at key #{first_invalid_key}" unless first_invalid_key.nil?
   end
 
-  def hash_flatten(parent, myHash, key_seq_hash)
-    myHash.each do |key, value|
+  def flatten_hash(parent, hash, key_seq_hash)
+    hash.each do |key, value|
       total_key = parent == "" ? key : "#{parent}.#{key}"
       if value.is_a? Hash
-        hash_flatten(total_key, value, key_seq_hash)
+        flatten_hash(total_key, value, key_seq_hash)
       else
         key_seq_hash[total_key] = value
       end
@@ -48,7 +48,7 @@ class Checkout
 
   def total_cents
     sum = 0
-    @counter.each do |k,v|
+    @counter.each do |k, v|
       sum += item_price(v, @pricing_rules[k])
     end
     sum
@@ -89,5 +89,4 @@ class Checkout
     end
     Hash[sym_hash]
   end
-
 end
